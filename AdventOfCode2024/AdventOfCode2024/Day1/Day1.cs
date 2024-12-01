@@ -12,8 +12,8 @@ namespace AdventOfCode2024.Day1
     {
         public void Main()
         {
-            var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day1\Example.txt");
-            //var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day1.txt");
+            //var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day1\Example.txt");
+            var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day1.txt");
 
             var input = File.ReadAllLines(Day1Path);
 
@@ -22,12 +22,26 @@ namespace AdventOfCode2024.Day1
 
         int Part2(string[]? input)
         {
+            var leftSideTotal = input.Select(x => { return Int32.Parse(x.Split("   ")[0]); }).ToArray();
+            var rightSideTotal = input.Select(x => { return Int32.Parse(x.Split("   ")[1]); }).ToArray();
+
+            int totalSimilarity = 0;
+
             for (int i = 0; i < input.Length; i++)
             {
-                Console.WriteLine(input[i]);
+                int left = leftSideTotal[i];
+
+                int rightEquivallents = rightSideTotal.Count(x => x == left);
+
+                int similarity = left * rightEquivallents;
+
+                totalSimilarity += similarity;
+                //Console.WriteLine(similarity);
             }
 
-            return 0;
+            Console.WriteLine("TOTAL SIMILARITY: " + totalSimilarity);
+
+            return totalSimilarity;
         }
 
 
