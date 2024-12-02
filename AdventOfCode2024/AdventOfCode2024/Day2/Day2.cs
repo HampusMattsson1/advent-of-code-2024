@@ -12,10 +12,10 @@ namespace AdventOfCode2024.Day2
     {
         public void Main()
         {
-            //var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day2\Example.txt");
-            var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day2.txt");
+            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day2\Example.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day2.txt");
 
-            var input = File.ReadAllLines(Day1Path);
+            var input = File.ReadAllLines(DayPath);
 
             Console.WriteLine("DAY 2");
 
@@ -36,19 +36,13 @@ namespace AdventOfCode2024.Day2
                 if (IsSequence(report) == false)
                     safeReport = false;
 
-                int currentValue = report[0];
-                int difference = 0;
-
                 for (int j = 1; j < report.Length; j++)
                 {
-                    difference += Math.Abs(currentValue - report[j]);
-
-                    if (Math.Abs(currentValue - report[j]) > 2)
+                    if (Math.Abs(report[j-1] - report[j]) > 3)
                     {
+                        var compare = report[j - 1].ToString() + " " + report[j].ToString();
                         safeReport = false;
                     }
-
-                    currentValue = report[j];
                 }
 
                 if (safeReport)
@@ -62,17 +56,18 @@ namespace AdventOfCode2024.Day2
 
         internal bool IsSequence(int[] report)
         {
-            int lastElement = report[0];
-            //int currentElement = report[1];
-
             bool validIncrease = false;
             bool validDecrease = false;
 
             for (int i = 1; i < report.Length; i++)
             {
-                if (report[i] >= lastElement)
+                if (report[i - 1] > report[i])
                 {
                     validIncrease = true;
+                }
+                else if (report[i - 1] == report[i])
+                {
+                    return false;
                 }
                 else
                 {
