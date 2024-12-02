@@ -12,8 +12,8 @@ namespace AdventOfCode2024.Day2
     {
         public void Main()
         {
-            var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day2\Example.txt");
-            //var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day2.txt");
+            //var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day2\Example.txt");
+            var Day1Path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day2.txt");
 
             var input = File.ReadAllLines(Day1Path);
 
@@ -33,36 +33,22 @@ namespace AdventOfCode2024.Day2
 
                 bool safeReport = true;
 
-                if (report.Length >= 2)
-                {
-                    bool increase = false;
-
-                    if (report[0] < report[1])
-                    {
-                        increase = true;
-                    }
-
-                    int current = report[0];
-
-                    for (int j = 1; j < report.Length; j++)
-                    {
-                        if (increase)
-                        {
-                            if (report[j] <= current)
-                                safeReport = false;
-                        }
-                        else
-                        {
-                            if (report[j] >= current)
-                                safeReport = false;
-                        }
-
-                        
-                    }
-                }
-                else
-                {
+                if (IsSequence(report) == false)
                     safeReport = false;
+
+                int currentValue = report[0];
+                int difference = 0;
+
+                for (int j = 1; j < report.Length; j++)
+                {
+                    difference += Math.Abs(currentValue - report[j]);
+
+                    if (Math.Abs(currentValue - report[j]) > 2)
+                    {
+                        safeReport = false;
+                    }
+
+                    currentValue = report[j];
                 }
 
                 if (safeReport)
@@ -72,6 +58,34 @@ namespace AdventOfCode2024.Day2
             Console.WriteLine("SAFE REPORTS: " + safeReports);
 
             return 0;
+        }
+
+        internal bool IsSequence(int[] report)
+        {
+            int lastElement = report[0];
+            //int currentElement = report[1];
+
+            bool validIncrease = false;
+            bool validDecrease = false;
+
+            for (int i = 1; i < report.Length; i++)
+            {
+                if (report[i] >= lastElement)
+                {
+                    validIncrease = true;
+                }
+                else
+                {
+                    validDecrease = true;
+                }
+            }
+
+            if (validIncrease == validDecrease)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
