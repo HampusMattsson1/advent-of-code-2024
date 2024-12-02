@@ -12,16 +12,54 @@ namespace AdventOfCode2024.Day2
     {
         public void Main()
         {
-            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day2\Example.txt");
-            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day2.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day2", "Example.txt");
+            // var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day2.txt");
 
             var input = File.ReadAllLines(DayPath);
 
             Console.WriteLine("DAY 2");
 
-            Part1(input);
+            // Part1(input);
+            Part2(input);
         }
 
+        internal int Part2(string[]? input)
+        {
+            int safeReports = 0;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                var report = input[i].Split(' ').Select(i => Int32.Parse(i)).ToArray();
+
+                bool safeReport = true;
+
+                int errorsInReport = 0;
+
+                errorsInReport += IsSequenceErrors(report);
+
+                if (errorsInReport == 0)
+                    safeReport = false;
+
+                for (int j = 1; j < report.Length; j++)
+                {
+                    if (Math.Abs(report[j-1] - report[j]) > 3)
+                    {
+                        var compare = report[j - 1].ToString() + " " + report[j].ToString();
+                        safeReport = false;
+                        errorsInReport++;
+                    }
+                }
+
+                Console.WriteLine("ISSEQUENCE ERRORS: " + errorsInReport);
+
+                if (safeReport)
+                    safeReports++;
+            }
+
+            Console.WriteLine("SAFE REPORTS: " + safeReports);
+
+            return 0;
+        }
 
         internal int Part1(string[]? input)
         {
@@ -33,7 +71,7 @@ namespace AdventOfCode2024.Day2
 
                 bool safeReport = true;
 
-                if (IsSequence(report) == false)
+                if (IsSequenceErrors(report) > 0)
                     safeReport = false;
 
                 for (int j = 1; j < report.Length; j++)
@@ -54,33 +92,34 @@ namespace AdventOfCode2024.Day2
             return 0;
         }
 
-        internal bool IsSequence(int[] report)
+        internal int IsSequenceErrors(int[] report)
         {
-            bool validIncrease = false;
-            bool validDecrease = false;
+            int increases = 0;
+            int decreases = 0;
+            int equals = 0;
 
             for (int i = 1; i < report.Length; i++)
             {
                 if (report[i - 1] > report[i])
                 {
-                    validIncrease = true;
+                    increases++;
                 }
                 else if (report[i - 1] == report[i])
                 {
-                    return false;
+                    equals++;
                 }
                 else
                 {
-                    validDecrease = true;
+                    decreases++;
                 }
             }
 
-            if (validIncrease == validDecrease)
+            if ((increases > 0 && decreases > 0) || equals > 0)
             {
-                return false;
+                return Math.Min(increases, decreases) + equals;
             }
 
-            return true;
+            return 0;
         }
     }
 }
