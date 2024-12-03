@@ -13,8 +13,8 @@ namespace AdventOfCode2024.Day3
     {
         public void Main()
         {
-            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day3", "Example.txt");
-            // var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day2.txt");
+            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day3", "Example.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day3.txt");
 
             var input = File.ReadAllLines(DayPath);
 
@@ -28,7 +28,9 @@ namespace AdventOfCode2024.Day3
 
         internal int Part1(string[]? input)
         {
-            var regex = new Regex("xmul\\(\\d,\\d\\)", RegexOptions.IgnoreCase);
+            var regex = new Regex("mul\\(\\d+,\\d+\\)", RegexOptions.IgnoreCase);
+
+            int result = 0;
 
             foreach(var line in input)
             {
@@ -36,9 +38,18 @@ namespace AdventOfCode2024.Day3
 
                 foreach (Match match in matches)
                 {
-                    Console.WriteLine("MATCH, " + match.ToString());
+                    string expression = match.ToString();
+
+                    int leftDigit = Int32.Parse(new Regex("\\d+").Matches(expression)[0].ToString());
+                    int rightDigit = Int32.Parse(new Regex("\\d+").Matches(expression)[1].ToString());
+
+                    result += leftDigit * rightDigit;
+
+                    //Console.WriteLine("MATCH, " + match.ToString());
                 }
             }
+
+            Console.WriteLine("DAY 1 Part 1 Result: " + result);
 
             return 0;
         }
