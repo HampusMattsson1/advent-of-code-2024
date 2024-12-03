@@ -23,34 +23,40 @@ namespace AdventOfCode2024.Day2
             Part2(input);
         }
 
-        internal int Part2(string[]? input)
+        internal int Part2(string[] input)
         {
             int safeReports = 0;
 
             for (int i = 0; i < input.Length; i++)
             {
-                var report = input[i].Split(' ').Select(i => Int32.Parse(i)).ToArray();
-
-                bool safeReport = true;
+                var report = input[i].Split(' ').Select(i => Int32.Parse(i)).ToList();
 
                 int errorsInReport = 0;
 
-                errorsInReport += IsSequenceErrors(report);
+                bool safeReport = true;
 
-                if (errorsInReport == 0)
-                    safeReport = false;
+                bool usedTolerance = false;
 
-                for (int j = 1; j < report.Length; j++)
+                if (IsSequence(report.ToArray()) > -1)
                 {
-                    if (Math.Abs(report[j-1] - report[j]) > 3)
-                    {
-                        var compare = report[j - 1].ToString() + " " + report[j].ToString();
-                        safeReport = false;
-                        errorsInReport++;
-                    }
+                    // Remove number from report
+                    report.RemoveAt(IsSequence(report.ToArray()));
+                    usedTolerance = true;
+                    //errorsInReport++;
                 }
 
-                Console.WriteLine("ISSEQUENCE ERRORS: " + errorsInReport);
+                if (IsSequence(report.ToArray()) > -1)
+                {
+                    safeReport = false;
+                }
+
+                // Right check
+                if (ValidDiff(report, usedTolerance) == false)
+                {
+                    safeReport = false;
+                }
+
+                Console.WriteLine("REPORT SAFE: " + safeReport);
 
                 if (safeReport)
                     safeReports++;
@@ -59,6 +65,41 @@ namespace AdventOfCode2024.Day2
             Console.WriteLine("SAFE REPORTS: " + safeReports);
 
             return 0;
+        }
+
+        bool ValidDiff(List<int> report, bool usedTolerance)
+        {
+            for (int j = 1; j < report.Count; j++)
+            {
+                if (Math.Abs(report[j - 1] - report[j]) > 3)
+                {
+                    int index;
+
+                    // check which number is the issue (and it's not the last element in the loop)
+                    if (j != report.Count - 1 && Math.Abs(report[j] - report[j+1]) > 3)
+                    {
+                        // This element is the issue
+                        index = j;
+                    }
+                    else
+                    {
+                        // Previous element is the issue
+                        index = j - 1;
+                    }
+
+                    if (usedTolerance == false)
+                    {
+                        report.RemoveAt(index);
+                        usedTolerance = true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         internal int Part1(string[]? input)
@@ -71,7 +112,7 @@ namespace AdventOfCode2024.Day2
 
                 bool safeReport = true;
 
-                if (IsSequenceErrors(report) > 0)
+                if (IsSequence(report) > -1)
                     safeReport = false;
 
                 for (int j = 1; j < report.Length; j++)
@@ -92,7 +133,7 @@ namespace AdventOfCode2024.Day2
             return 0;
         }
 
-        internal int IsSequenceErrors(int[] report)
+        internal int IsSequence(int[] report)
         {
             int increases = 0;
             int decreases = 0;
@@ -112,14 +153,15 @@ namespace AdventOfCode2024.Day2
                 {
                     decreases++;
                 }
+
+                if ((increases > 0 && decreases > 0) || equals > 0)
+                {
+                    //return Math.Min(increases, decreases) + equals;
+                    return i;
+                }
             }
 
-            if ((increases > 0 && decreases > 0) || equals > 0)
-            {
-                return Math.Min(increases, decreases) + equals;
-            }
-
-            return 0;
+            return -1;
         }
     }
 }
