@@ -20,8 +20,8 @@ namespace AdventOfCode2024.Day3
 
             Console.WriteLine("DAY 3");
 
-            Part1(input);
-            //Part2(input);
+            //Part1(input);
+            Part2(input);
         }
 
 
@@ -54,6 +54,62 @@ namespace AdventOfCode2024.Day3
             return 0;
         }
 
-        
+        internal int Part2(string[] input)
+        {
+            var regex = new Regex("mul\\(\\d+,\\d+\\)", RegexOptions.IgnoreCase);
+
+            int result = 0;
+
+            bool performMultiplication = true;
+
+            foreach (var line in input)
+            {
+                var matches = regex.Matches(line);
+                //var doMatches = new Regex("do\\(\\)").Matches(line);
+                //var dontMatches = new Regex("don't\\(\\)").Matches(line);
+
+                var performMatches = new Regex("do\\(\\)|don't\\(\\)").Matches(line);
+
+                foreach (Match match in matches)
+                {
+                    // Check if the expression should be calculated
+                    int matchIndex = match.Index;
+                    Match? closestPerform = performMatches.Where(m => m.Index < matchIndex).OrderByDescending(v => v.Index).FirstOrDefault();
+
+                    if (performMultiplication)
+                    {
+                        // Look for don'ts
+                        if (closestPerform?.ToString() == "don't()")
+                        {
+                            performMultiplication = false;
+                        }
+                    }
+                    else
+                    {
+                        // Look for do's
+                        if (closestPerform?.ToString() == "do()")
+                        {
+                            performMultiplication = true;
+                        }
+                    }
+
+                    
+                    if (performMultiplication)
+                    {
+                        string expression = match.ToString();
+
+                        int leftDigit = Int32.Parse(new Regex("\\d+").Matches(expression)[0].ToString());
+                        int rightDigit = Int32.Parse(new Regex("\\d+").Matches(expression)[1].ToString());
+
+                        result += leftDigit * rightDigit;
+                    }
+                    //Console.WriteLine("MATCH, " + match.ToString());
+                }
+            }
+
+            Console.WriteLine("DAY 1 Part 2 Result: " + result);
+
+            return 0;
+        }
     }
 }
