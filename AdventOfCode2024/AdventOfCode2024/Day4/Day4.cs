@@ -20,8 +20,8 @@ namespace AdventOfCode2024.Day4
 
             Console.WriteLine("DAY 4");
 
-            Part1(input);
-            //Part2(input);
+            //Part1(input);
+            Part2(input);
         }
 
 
@@ -132,6 +132,75 @@ namespace AdventOfCode2024.Day4
                 {
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        internal void Part2(string[] rader)
+        {
+            int xmasFound = 0;
+
+            int height = rader.Length;
+            int width = rader[0].Length;
+
+            for (int i = 0; i < rader.Length; i++)
+            {
+                string rad = rader[i];
+
+                for (int j = 0; j < rad.Length; j++)
+                {
+                    char character = rad[j];
+
+                    if (character == 'A')
+                    {
+                        string str = "";
+
+                        int x;
+                        int y;
+
+                        // Top left
+                        y = i - 1;
+                        x = j - 1;
+                        if (ValidCords(x, y, height, width) == false)
+                            continue;
+                        str += rader[y][x];
+
+                        // Top right
+                        y = i - 1;
+                        x = j + 1;
+                        if (ValidCords(x, y, height, width) == false)
+                            continue;
+                        str += rader[y][x];
+
+                        // Bottom left
+                        y = i + 1;
+                        x = j - 1;
+                        if (ValidCords(x, y, height, width) == false)
+                            continue;
+                        str += rader[y][x];
+
+                        // Bottom right
+                        y = i + 1;
+                        x = j + 1;
+                        if (ValidCords(x, y, height, width) == false)
+                            continue;
+                        str += rader[y][x];
+
+                        if (str == "MSMS" || str == "SMSM" || str == "MMSS" || str == "SSMM")
+                            xmasFound++;
+                    }
+                }
+            }
+
+            Console.WriteLine("DAY 4 Part 2 Result: " + xmasFound);
+        }
+
+        bool ValidCords(int x, int y, int height, int width)
+        {
+            if (x >= 0 && y >= 0 && x < width && y < height)
+            {
+                return true;
             }
 
             return false;
