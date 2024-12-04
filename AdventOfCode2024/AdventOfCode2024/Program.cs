@@ -9,11 +9,11 @@ using AdventOfCode2024.Day4;
 //Day1 Day1 = new();
 //Day1.Main();
 
-//Day2 Day2 = new();
-//Day2.Main();
+Day2 Day2 = new();
+Day2.Main();
 
 //Day3 Day3 = new();
 //Day3.Main();
 
-Day4 Day4 = new();
-Day4.Main();
+//Day4 Day4 = new();
+//Day4.Main();
