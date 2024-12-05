@@ -13,8 +13,8 @@ namespace AdventOfCode2024.Day5
     {
         public void Main()
         {
-            // var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/AdventOfCode2024/Day5/Example.txt");
-            var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/AdventOfCode2024/PuzzleInputs/Day5.txt");
+            var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/Day5/Example.txt");
+            // var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/PuzzleInputs/Day5.txt");
             // var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day5", "Example.txt");
             //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day5.txt");
 
@@ -45,13 +45,9 @@ namespace AdventOfCode2024.Day5
 
                 bool correct = true;
 
-                //foreach (var page in pages)x
                 for (int i = 0; i < pages.Length; i++)
                 {
                     string page = pages[i];
-
-                    // Lookup
-                    // var lookup = tableLookup.Where(t => t.Key == page).Select(t => t.Value).ToList();
 
                     var followingPages = pages.Skip(i+1).ToList();
                     var previousPages = pages.Take(i+1).ToList();
@@ -63,18 +59,6 @@ namespace AdventOfCode2024.Day5
                     // Ingen page bakom får ha nuvarande page bakom sig
                     if (LookupContainsValue(page, previousPages, tableLookupBefore))
                         correct = false;
-
-                    // Check each lookup
-                    // foreach (var look in lookup)
-                    // {
-                    //     correct = LookupContainsValue(page, followingPages, tableLookup);
-                    // }
-
-                    //if (1 == 1)
-                    //{
-                    //    correct = false;
-                    //}
-                    var a = 2;
                 }
 
                 if (correct)

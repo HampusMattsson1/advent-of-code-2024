@@ -3,7 +3,7 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-AdventOfCode2024/AdventOfCode2024/PuzzleInputs/*
+AdventOfCode2024/PuzzleInputs/*
 
 # User-specific files
 *.rsuser
