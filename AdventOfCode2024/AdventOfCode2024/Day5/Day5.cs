@@ -76,7 +76,7 @@ namespace AdventOfCode2024.Day5
         }
 
         bool LookupContainsValue(string page, List<string> followingPages, List<KeyValuePair<string, string>> tableLookup)
-        {
+                {
             bool valid = true;
 
             foreach (var followingPage in followingPages)
