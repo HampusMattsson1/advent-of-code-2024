@@ -8,6 +8,8 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Buffers;
+using System.Numerics;
+using System.Windows;
 
 namespace AdventOfCode2024.Day6
 {
@@ -39,6 +41,11 @@ namespace AdventOfCode2024.Day6
             Point position = GetInitialGuardPosition(array, height, width);
             var guard = array[position.Y, position.X];
 
+        }
+
+        Point MoveGuard(char[,] array, Point position, Point movement)
+        {
+            return new Point(-1,-1);
         }
 
         char[,] Create2dArray(string[] rows, int height, int width)
