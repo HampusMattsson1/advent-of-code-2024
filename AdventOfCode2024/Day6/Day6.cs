@@ -17,8 +17,8 @@ namespace AdventOfCode2024.Day6
     {
         public void Main()
         {
-            var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/Day6/Example.txt");
-            // var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day6", "Example.txt");
+            //var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/Day6/Example.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day6", "Example.txt");
             //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day6.txt");
 
             var input = File.ReadAllLines(DayPath);
@@ -41,12 +41,98 @@ namespace AdventOfCode2024.Day6
             Point position = GetInitialGuardPosition(array, height, width);
             var guard = array[position.Y, position.X];
 
+			Console.WriteLine("Position: " + position.X + "," + position.Y);
+            var a = FindNextPosition(array, guard, position, height, width);
+			Console.WriteLine("New Movement: " + a.X + "," + a.Y);
+
+            int steps = 0;
+
+            while (position.X != -1 && position.Y != -1)
+            {
+                position = FindNextPosition(array, guard, position, height, width);
+                guard = array[position.Y, position.X];
+
+				steps++;
+            }
+
+			//MoveGuard(array, guard, position);
+		}
+
+		Point MoveGuard(char[,] array, char guard, Point position, Point movement)
+        {
+            var newPosition = new Point();
+            newPosition.X = position.X + movement.X;
+            newPosition.Y = position.Y + movement.Y;
+
+            Console.WriteLine("New Position: " + newPosition.X + "," + newPosition.Y);
+
+			return newPosition;
         }
 
-        Point MoveGuard(char[,] array, Point position, Point movement)
+        Point FindNextPosition(char[,] array, char guard, Point position, int height, int width)
         {
-            return new Point(-1,-1);
-        }
+            Point vector = new Point(position.X, position.Y);
+
+            //char character = array[position.Y, position.X];
+
+			switch (guard)
+            {
+                case '^':
+                    //vector.Y = position.Y - 1;
+                    if (array[position.Y - 1, position.X] == '#')
+                    {
+                        vector.X += 1;
+                    }
+                    else
+                    {
+                        vector.Y -= 1;
+                    }
+                    break;
+                case 'v':
+					if (array[position.Y + 1, position.X] == '#')
+					{
+						vector.X -= 1;
+					}
+					else
+					{
+						vector.Y += 1;
+					}
+					break;
+				case '<':
+					if (array[position.Y, position.X - 1] == '#')
+					{
+						vector.Y -= 1;
+					}
+					else
+					{
+						vector.X -= 1;
+					}
+					break;
+				case '>':
+					if (array[position.Y, position.X + 1] == '#')
+					{
+						vector.Y -= 1;
+					}
+					else
+					{
+						vector.X -= 1;
+					}
+					break;
+			}
+
+            // Check if out of bounds == end
+            if (vector.X < 0 || vector.X >= width || vector.Y < 0 || vector.Y >= height)
+            {
+                return new Point(-1, -1);
+            }
+
+            return vector;
+		}
+
+        //char GetChar(char[,] array, Point position)
+        //{
+        //    return array[position.Y, position.X];
+        //}
 
         char[,] Create2dArray(string[] rows, int height, int width)
         {
