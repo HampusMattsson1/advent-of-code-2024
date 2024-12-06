@@ -15,11 +15,17 @@ namespace AdventOfCode2024.Day6
 {
     public class Day6
     {
+        public class Guard
+        {
+            public Point position = new Point();
+            public char guard;
+		};
+
         public void Main()
         {
             //var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/Day6/Example.txt");
-            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day6", "Example.txt");
-            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day6.txt");
+            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day6", "Example.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day6.txt");
 
             var input = File.ReadAllLines(DayPath);
 
@@ -38,95 +44,101 @@ namespace AdventOfCode2024.Day6
             // Create 2D array
             char[,] array = Create2dArray(rows, height, width);
 
-            Point position = GetInitialGuardPosition(array, height, width);
-            var guard = array[position.Y, position.X];
+            var guard = new Guard();
 
-			Console.WriteLine("Position: " + position.X + "," + position.Y);
-            var a = FindNextPosition(array, guard, position, height, width);
-			Console.WriteLine("New Movement: " + a.X + "," + a.Y);
+            guard.position = GetInitialGuardPosition(array, height, width);
+            guard.guard = array[guard.position.Y, guard.position.X];
 
-            int steps = 0;
+			Console.WriteLine("Position: " + guard.position.X + "," + guard.position.Y);
+            var a = UpdateGuard(array, guard, height, width);
+			Console.WriteLine("New Movement: " + a.position.X + "," + a.position.Y);
 
-            while (position.X != -1 && position.Y != -1)
+            List<Point> positions = new();
+
+            while (guard.position.X != -1 && guard.position.Y != -1)
             {
-                position = FindNextPosition(array, guard, position, height, width);
-                guard = array[position.Y, position.X];
+                guard = UpdateGuard(array, guard, height, width);
 
-				steps++;
+                positions.Add(guard.position);
             }
 
-			//MoveGuard(array, guard, position);
+			Console.WriteLine("Total positions: " + positions.Count);
+			Console.WriteLine("Total distinct positions: " + positions.Distinct().Count());
 		}
 
-		Point MoveGuard(char[,] array, char guard, Point position, Point movement)
+		Guard UpdateGuard(char[,] array, Guard guard, int height, int width)
         {
-            var newPosition = new Point();
-            newPosition.X = position.X + movement.X;
-            newPosition.Y = position.Y + movement.Y;
+            Point position = guard.position;
 
-            Console.WriteLine("New Position: " + newPosition.X + "," + newPosition.Y);
+            Point vector = new Point(guard.position.X, guard.position.Y);
 
-			return newPosition;
-        }
-
-        Point FindNextPosition(char[,] array, char guard, Point position, int height, int width)
-        {
-            Point vector = new Point(position.X, position.Y);
-
-            //char character = array[position.Y, position.X];
-
-			switch (guard)
-            {
-                case '^':
-                    //vector.Y = position.Y - 1;
-                    if (array[position.Y - 1, position.X] == '#')
-                    {
-                        vector.X += 1;
-                    }
-                    else
-                    {
-                        vector.Y -= 1;
-                    }
-                    break;
-                case 'v':
-					if (array[position.Y + 1, position.X] == '#')
-					{
-						vector.X -= 1;
-					}
-					else
-					{
-						vector.Y += 1;
-					}
-					break;
-				case '<':
-					if (array[position.Y, position.X - 1] == '#')
-					{
-						vector.Y -= 1;
-					}
-					else
-					{
-						vector.X -= 1;
-					}
-					break;
-				case '>':
-					if (array[position.Y, position.X + 1] == '#')
-					{
-						vector.Y -= 1;
-					}
-					else
-					{
-						vector.X -= 1;
-					}
-					break;
+			// Check if out of bounds == end
+			if (vector.X < 0 || vector.X >= width || vector.Y < 0 || vector.Y >= height)
+			{
+				guard.position = new Point(-1, -1);
+                return guard;
 			}
 
-            // Check if out of bounds == end
-            if (vector.X < 0 || vector.X >= width || vector.Y < 0 || vector.Y >= height)
+            try
             {
-                return new Point(-1, -1);
+                switch (guard.guard)
+                {
+                    case '^':
+                        if (array[position.Y - 1, position.X] == '#')
+                        {
+                            vector.X += 1;
+							guard.guard = '>';
+						}
+                        else
+                        {
+                            vector.Y -= 1;
+                        }
+                        break;
+                    case 'v':
+                        if (array[position.Y + 1, position.X] == '#')
+                        {
+                            vector.X -= 1;
+							guard.guard = '<';
+						}
+                        else
+                        {
+                            vector.Y += 1;
+                        }
+                        break;
+                    case '<':
+                        if (array[position.Y, position.X - 1] == '#')
+                        {
+                            vector.Y -= 1;
+							guard.guard = '^';
+						}
+                        else
+                        {
+                            vector.X -= 1;
+                        }
+                        break;
+                    case '>':
+                        if (array[position.Y, position.X + 1] == '#')
+                        {
+                            vector.Y += 1;
+							guard.guard = 'v';
+						}
+                        else
+                        {
+                            vector.X += 1;
+                        }
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+				guard.position = new Point(-1, -1);
+				return guard;
+			}
+			
 
-            return vector;
+            guard.position = vector;
+
+            return guard;
 		}
 
         //char GetChar(char[,] array, Point position)
