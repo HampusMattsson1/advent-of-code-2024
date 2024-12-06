@@ -35,6 +35,49 @@ namespace AdventOfCode2024.Day6
             //Part2(input);
         }
 
+        void Part2(string[] rows)
+        {
+			int height = rows.Length;
+			int width = rows[0].Length;
+
+			// Create 2D array
+			char[,] array = Create2dArray(rows, height, width);
+
+			var guard = new Guard();
+
+			guard.position = GetInitialGuardPosition(array, height, width);
+			guard.guard = array[guard.position.Y, guard.position.X];
+
+			List<Point> positions = new();
+
+            // Testa lägga obstacles och se ifall det blir oändlighetsloop
+            int possibleLoopCombinations = 0;
+
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    array[i, j] = '#';
+                    if (InfiniteLoop(array, guard))
+                        possibleLoopCombinations++;
+                }
+            }
+
+			while (guard.position.X != -1 && guard.position.Y != -1)
+			{
+				guard = UpdateGuard(array, guard, height, width);
+
+				positions.Add(guard.position);
+			}
+
+			Console.WriteLine("Total positions: " + positions.Count);
+			Console.WriteLine("Total distinct positions: " + positions.Distinct().Count());
+		}
+
+        bool InfiniteLoop(char[,] array, Guard guard)
+		{
+
+        }
 
         void Part1(string[] rows)
         {
@@ -48,10 +91,6 @@ namespace AdventOfCode2024.Day6
 
             guard.position = GetInitialGuardPosition(array, height, width);
             guard.guard = array[guard.position.Y, guard.position.X];
-
-			Console.WriteLine("Position: " + guard.position.X + "," + guard.position.Y);
-            var a = UpdateGuard(array, guard, height, width);
-			Console.WriteLine("New Movement: " + a.position.X + "," + a.position.Y);
 
             List<Point> positions = new();
 
