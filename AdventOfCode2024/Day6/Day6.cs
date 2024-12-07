@@ -76,7 +76,7 @@ namespace AdventOfCode2024.Day6
 
         bool InfiniteLoop(char[,] array, Guard guard)
 		{
-
+            return false;
         }
 
         void Part1(string[] rows)
