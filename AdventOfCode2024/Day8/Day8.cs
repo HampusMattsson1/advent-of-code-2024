@@ -26,14 +26,20 @@ namespace AdventOfCode2024.Day8
 
             Console.WriteLine("DAY 8");
 
-            Part1(input);
-            //Part2(input);
-        }
+            // Part 1
+			//Solution(input);
+
+            // Part 2
+			Solution(input, true);
+		}
 
 
-        void Part1(string[] rows)
+        void Solution(string[] rows, bool part2 = false)
         {
-            List<KeyValuePair<char, Point>> antennas = new();
+            int height = rows.Length;
+            int width = rows[0].Length;
+
+			List<KeyValuePair<char, Point>> antennas = new();
 
             // Find all antennas
             for(int i = 0; i < rows.Length; i++)
@@ -74,11 +80,11 @@ namespace AdventOfCode2024.Day8
 
 						processedPairs.Add(pair);
 
-						var antiNodes = FindAntinodes(antenna.Value, otherAntenna.Value);
+						var antiNodes = FindAntinodes(antenna.Value, otherAntenna.Value, width, height, part2);
 
                         foreach (Point antiNode in antiNodes)
                         {
-                            if (CreateAntiNode(rows, antiNode))
+                            if (ValidAntiNode(antiNode, width, height))
                             {
 								StringBuilder sb = new StringBuilder(rows[antiNode.Y]);
 								sb[antiNode.X] = '#';
@@ -90,12 +96,12 @@ namespace AdventOfCode2024.Day8
                 }
             }
 
-			Console.WriteLine("Part 1 result sum: " + antiNodeLocations.Distinct().Count());
+			Console.WriteLine("Result: " + antiNodeLocations.Distinct().Count());
 
-            //File.WriteAllLines(@"C:\Temp\Day8Result.txt", rows);
+            File.WriteAllLines(@"C:\Temp\Day8Result.txt", rows);
         }
 
-        List<Point> FindAntinodes(Point antenna1, Point antenna2)
+        List<Point> FindAntinodes(Point antenna1, Point antenna2, int width, int height, bool part2)
         {
             List<Point> result = new();
 
@@ -104,54 +110,78 @@ namespace AdventOfCode2024.Day8
             distance.X = Math.Abs(antenna1.X - antenna2.X);
             distance.Y = Math.Abs(antenna1.Y - antenna2.Y);
 
-            Point antiNode1 = new();
-            Point antiNode2 = new();
+			// First direction
+			Point antiNode = antenna1;
+            Point compareNode = antenna2;
 
-            if (antenna1.X + distance.X == antenna2.X)
+			while (ValidAntiNode(antiNode, width, height))
+			{
+                Point antiNodeBefore = new();
+				antiNodeBefore.X = antiNode.X;
+				antiNodeBefore.Y = antiNode.Y;
+				antiNode = GetAntiNode(antiNode, compareNode, distance);
+				compareNode = antiNodeBefore;
+
+				result.Add(new Point(antiNode.X, antiNode.Y));
+
+                if (part2 == false)
+                    break;
+			}
+
+			// Second direction
+			antiNode = antenna2;
+			compareNode = antenna1;
+
+			while (ValidAntiNode(antiNode, width, height))
+			{
+				Point antiNodeBefore = new();
+				antiNodeBefore.X = antiNode.X;
+				antiNodeBefore.Y = antiNode.Y;
+				antiNode = GetAntiNode(antiNode, compareNode, distance);
+                compareNode = antiNodeBefore;
+
+				result.Add(new Point(antiNode.X, antiNode.Y));
+
+				if (part2 == false)
+					break;
+			}
+
+            if (part2)
             {
-                antiNode1.X = antenna1.X - distance.X;
-			}
-            else
-            {
-				antiNode1.X = antenna1.X + distance.X;
+				result.Add(new Point(antenna1.X, antenna1.Y));
+				result.Add(new Point(antenna2.X, antenna2.Y));
 			}
 
-			if (antenna2.X + distance.X == antenna1.X)
-			{
-				antiNode2.X = antenna2.X - distance.X;
-			}
-            else
-            {
-				antiNode2.X = antenna2.X + distance.X;
-			}
-
-			if (antenna1.Y + distance.Y == antenna2.Y)
-			{
-				antiNode1.Y = antenna1.Y - distance.Y;
-			}
-			else
-			{
-				antiNode1.Y = antenna1.Y + distance.Y;
-			}
-
-			if (antenna2.Y + distance.Y == antenna1.Y)
-			{
-				antiNode2.Y = antenna2.Y - distance.Y;
-			}
-			else
-			{
-				antiNode2.Y = antenna2.Y + distance.Y;
-			}
-
-			result.Add(antiNode1);
-            result.Add(antiNode2);
-
-            return result;
+			return result;
         }
 
-        bool CreateAntiNode(string[] rows, Point antiNode)
+        Point GetAntiNode(Point antiNode, Point antenna2, Point distance)
         {
-            if (antiNode.X >= 0 && antiNode.X < rows[0].Length && antiNode.Y >= 0 && antiNode.Y < rows.Length)
+
+			if (antiNode.X + distance.X == antenna2.X)
+			{
+				antiNode.X = antiNode.X - distance.X;
+			}
+			else
+			{
+				antiNode.X = antiNode.X + distance.X;
+			}
+
+			if (antiNode.Y + distance.Y == antenna2.Y)
+			{
+				antiNode.Y = antiNode.Y - distance.Y;
+			}
+			else
+			{
+				antiNode.Y = antiNode.Y + distance.Y;
+			}
+
+            return antiNode;
+		}
+
+        bool ValidAntiNode(Point antiNode, int width, int height)
+        {
+            if (antiNode.X >= 0 && antiNode.X < width && antiNode.Y >= 0 && antiNode.Y < height)
             {
                 return true;
 			}
