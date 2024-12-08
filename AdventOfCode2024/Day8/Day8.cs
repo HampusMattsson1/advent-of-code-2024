@@ -17,10 +17,10 @@ namespace AdventOfCode2024.Day8
     {
         public void Main()
         {
-            var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/Day8/Example.txt");
+            //var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/Day8/Example.txt");
             // var DayPath = Path.Combine("/home/hjm/Dokument/advent-of-code-2024/AdventOfCode2024/PuzzleInputs/Day7.txt");
-            // var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day6", "Example.txt");
-            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day6.txt");
+            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Day8", "Example.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "PuzzleInputs", "Day8.txt");
 
             var input = File.ReadAllLines(DayPath);
 
@@ -33,8 +33,6 @@ namespace AdventOfCode2024.Day8
 
         void Part1(string[] rows)
         {
-            long result = 0;
-
             List<KeyValuePair<char, Point>> antennas = new();
 
             // Find all antennas
@@ -46,40 +44,55 @@ namespace AdventOfCode2024.Day8
                 {
                     if (line[j] != '#' && line[j] != '.')
                     {
-                        antennas.Add(new KeyValuePair<char, Point>(line[j], new Point(i, j)));
+                        antennas.Add(new KeyValuePair<char, Point>(line[j], new Point(j, i)));
                     }
                 }
             }
+
+            List<Point> antiNodeLocations = new();
 
             var groupedAntennas = antennas.GroupBy(a => a.Key).ToList();
 
             // Loop through all antennas and find antinodes for each combination
             foreach (var antennaType in groupedAntennas)
             {
-                foreach(var antenna in antennaType)
+                var processedPairs = new HashSet<(Point, Point)>();
+
+				foreach (var antenna in antennaType)
                 {
                     // Find all other antennas
-                    foreach (var otherAntenna in antennaType.Where(a => a.Value != antenna.Value))
+                    foreach (var otherAntenna in antennaType)
                     {
-                        var antinodes = FindAntinodes(antenna.Value, otherAntenna.Value);
-                        
-                        Point antiNode1 = antinodes[0];
-                        Point antiNode2 = antinodes[1];
+						if (antenna.Value == otherAntenna.Value)
+							continue;
 
-                        // rows[antiNode1.Y][antiNode1.X] = '#';
-                        string newRow;
+						var pair = (antenna.Value, otherAntenna.Value);
+						var reversePair = (otherAntenna.Value, antenna.Value);
 
-                        newRow = rows[antiNode1.Y].Substring(0, antiNode1.X - 1) + '#' + rows[antiNode1.Y].Substring(antiNode1.X + 1);
-                        rows[antiNode1.Y] = newRow;
+						if (processedPairs.Contains(pair) || processedPairs.Contains(reversePair))
+							continue;
 
-                        newRow = rows[antiNode2.Y].Substring(0, antiNode2.X - 1) + '#' + rows[antiNode2.Y].Substring(antiNode2.X + 1);
-                        rows[antiNode2.Y] = newRow;
+						processedPairs.Add(pair);
+
+						var antiNodes = FindAntinodes(antenna.Value, otherAntenna.Value);
+
+                        foreach (Point antiNode in antiNodes)
+                        {
+                            if (CreateAntiNode(rows, antiNode))
+                            {
+								StringBuilder sb = new StringBuilder(rows[antiNode.Y]);
+								sb[antiNode.X] = '#';
+								rows[antiNode.Y] = sb.ToString();
+								antiNodeLocations.Add(antiNode);
+							}
+						}
                     }
                 }
-                var a = 2;
             }
 
-			Console.WriteLine("Part 1 result sum: " + result);
+			Console.WriteLine("Part 1 result sum: " + antiNodeLocations.Distinct().Count());
+
+            //File.WriteAllLines(@"C:\Temp\Day8Result.txt", rows);
         }
 
         List<Point> FindAntinodes(Point antenna1, Point antenna2)
@@ -91,14 +104,60 @@ namespace AdventOfCode2024.Day8
             distance.X = Math.Abs(antenna1.X - antenna2.X);
             distance.Y = Math.Abs(antenna1.Y - antenna2.Y);
 
-            Point antiNode1 = new Point(antenna1.X + distance.X, antenna1.Y + distance.Y);
-            Point antiNode2 = new Point(antenna2.X + distance.X, antenna2.Y + distance.Y);
+            Point antiNode1 = new();
+            Point antiNode2 = new();
 
-            result.Add(antiNode1);
+            if (antenna1.X + distance.X == antenna2.X)
+            {
+                antiNode1.X = antenna1.X - distance.X;
+			}
+            else
+            {
+				antiNode1.X = antenna1.X + distance.X;
+			}
+
+			if (antenna2.X + distance.X == antenna1.X)
+			{
+				antiNode2.X = antenna2.X - distance.X;
+			}
+            else
+            {
+				antiNode2.X = antenna2.X + distance.X;
+			}
+
+			if (antenna1.Y + distance.Y == antenna2.Y)
+			{
+				antiNode1.Y = antenna1.Y - distance.Y;
+			}
+			else
+			{
+				antiNode1.Y = antenna1.Y + distance.Y;
+			}
+
+			if (antenna2.Y + distance.Y == antenna1.Y)
+			{
+				antiNode2.Y = antenna2.Y - distance.Y;
+			}
+			else
+			{
+				antiNode2.Y = antenna2.Y + distance.Y;
+			}
+
+			result.Add(antiNode1);
             result.Add(antiNode2);
 
             return result;
         }
+
+        bool CreateAntiNode(string[] rows, Point antiNode)
+        {
+            if (antiNode.X >= 0 && antiNode.X < rows[0].Length && antiNode.Y >= 0 && antiNode.Y < rows.Length)
+            {
+                return true;
+			}
+
+            return false;
+		}
         
     }
 }
