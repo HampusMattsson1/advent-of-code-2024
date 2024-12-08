@@ -37,6 +37,7 @@ namespace AdventOfCode2024.Day8
 
             List<KeyValuePair<char, Point>> antennas = new();
 
+            // Find all antennas
             for(int i = 0; i < rows.Length; i++)
             {
                 var line = rows[i];
@@ -52,6 +53,32 @@ namespace AdventOfCode2024.Day8
 
             var groupedAntennas = antennas.GroupBy(a => a.Key).ToList();
 
+            // Loop through all antennas and find antinodes for each combination
+            foreach (var antennaType in groupedAntennas)
+            {
+                foreach(var antenna in antennaType)
+                {
+                    // Find all other antennas
+                    foreach (var otherAntenna in antennaType.Where(a => a.Value != antenna.Value))
+                    {
+                        var antinodes = FindAntinodes(antenna.Value, otherAntenna.Value);
+                        
+                        Point antiNode1 = antinodes[0];
+                        Point antiNode2 = antinodes[1];
+
+                        // rows[antiNode1.Y][antiNode1.X] = '#';
+                        string newRow;
+
+                        newRow = rows[antiNode1.Y].Substring(0, antiNode1.X - 1) + '#' + rows[antiNode1.Y].Substring(antiNode1.X + 1);
+                        rows[antiNode1.Y] = newRow;
+
+                        newRow = rows[antiNode2.Y].Substring(0, antiNode2.X - 1) + '#' + rows[antiNode2.Y].Substring(antiNode2.X + 1);
+                        rows[antiNode2.Y] = newRow;
+                    }
+                }
+                var a = 2;
+            }
+
 			Console.WriteLine("Part 1 result sum: " + result);
         }
 
@@ -59,7 +86,16 @@ namespace AdventOfCode2024.Day8
         {
             List<Point> result = new();
 
+            Point distance = new();
+            
+            distance.X = Math.Abs(antenna1.X - antenna2.X);
+            distance.Y = Math.Abs(antenna1.Y - antenna2.Y);
 
+            Point antiNode1 = new Point(antenna1.X + distance.X, antenna1.Y + distance.Y);
+            Point antiNode2 = new Point(antenna2.X + distance.X, antenna2.Y + distance.Y);
+
+            result.Add(antiNode1);
+            result.Add(antiNode2);
 
             return result;
         }
