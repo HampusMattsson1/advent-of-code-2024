@@ -98,7 +98,7 @@ namespace AdventOfCode2024.Day8
 
 			Console.WriteLine("Result: " + antiNodeLocations.Distinct().Count());
 
-            File.WriteAllLines(@"C:\Temp\Day8Result.txt", rows);
+            //File.WriteAllLines(@"C:\Temp\Day8Result.txt", rows);
         }
 
         List<Point> FindAntinodes(Point antenna1, Point antenna2, int width, int height, bool part2)
