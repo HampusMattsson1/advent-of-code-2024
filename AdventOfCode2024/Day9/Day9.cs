@@ -35,6 +35,7 @@ namespace AdventOfCode2024.Day9
         {
             int id = 0;
 
+			var indexIdDict = new Dictionary<int, int>();
             var output = new StringBuilder("");
 
             for (int i = 0; i < input.Length; i++)
@@ -44,8 +45,14 @@ namespace AdventOfCode2024.Day9
                 // File blocks
                 if (i % 2 == 0)
                 {
-                    //output += id.ToString() * number;
-                    output.Append(String.Concat(Enumerable.Repeat(id.ToString(), number)));
+					//output.Append(String.Concat(Enumerable.Repeat(id.ToString(), number)));
+					output.Append(String.Concat(Enumerable.Repeat('X', number)));
+
+					for (int j = output.Length - number; j < output.Length; j++)
+					{
+						indexIdDict[j] = id;
+					}
+					
 					id++;
 				}
 				// Empty blocks
@@ -82,6 +89,8 @@ namespace AdventOfCode2024.Day9
 
 					output[i] = output[lastNonPeriodIndex];
                     output[lastNonPeriodIndex] = '.';
+
+					indexIdDict[i] = indexIdDict[lastNonPeriodIndex];
 				}
 			}
 
@@ -98,7 +107,8 @@ namespace AdventOfCode2024.Day9
 				if (output[i] == '.')
 					break;
 
-				result += Int32.Parse(output[i].ToString()) * i;
+				//result += Int32.Parse(output[i].ToString()) * i;
+				result += indexIdDict[i] * i;
 			}
 
 			Console.WriteLine("Result: " + result);
