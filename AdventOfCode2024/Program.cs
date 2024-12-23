@@ -7,6 +7,7 @@ using AdventOfCode2024.Day6;
 using AdventOfCode2024.Day7;
 using AdventOfCode2024.Day8;
 using AdventOfCode2024.Day9;
+using AdventOfCode2024.Day23;
 
 // See https://aka.ms/new-console-template for more information
 //Console.WriteLine("Hello, World!");
@@ -35,5 +36,8 @@ using AdventOfCode2024.Day9;
 //Day8 Day8 = new();
 //Day8.Main();
 
-Day9 Day9 = new();
-Day9.Main();
+//Day9 Day9 = new();
+//Day9.Main();
+
+Day23 Day23 = new();
+Day23.Main();
