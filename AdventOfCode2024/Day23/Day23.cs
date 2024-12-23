@@ -12,8 +12,8 @@ namespace AdventOfCode2024.Day23
     {
         public void Main()
         {
-            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day23\Example.txt");
-            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day23.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day23\Example.txt");
+            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day23.txt");
 
             var input = File.ReadAllLines(DayPath);
 
@@ -28,46 +28,85 @@ namespace AdventOfCode2024.Day23
         {
             List<string> result = new();
 
-            List<KeyValuePair<string, string>> nodeList = new();
+            //List<KeyValuePair<string, string>> nodeList = new();
+            Dictionary<string, List<string>> nodeList = new();
 
             foreach (var line in input)
             {
-                Console.WriteLine(line);
+                //Console.WriteLine(line);
 
                 string[] nodes = line.Split('-');
 
-                nodeList.Add(new KeyValuePair<string, string>(nodes[0], nodes[1]));
-                nodeList.Add(new KeyValuePair<string, string>(nodes[1], nodes[0]));
+                if (nodeList.ContainsKey(nodes[0]))
+                {
+                    nodeList[nodes[0]].Add(nodes[1]);
+                } else
+                {
+                    nodeList[nodes[0]] = new List<string> { nodes[1] };
+                }
+
+                if (nodeList.ContainsKey(nodes[1]))
+                {
+                    nodeList[nodes[1]].Add(nodes[0]);
+                }
+                else
+                {
+                    nodeList[nodes[1]] = new List<string> { nodes[0] };
+                }
             }
+
 
             foreach (var nodePair in nodeList)
             {
                 var primaryNode = nodePair.Key;
-                var secondaryNode = nodePair.Value;
+                var secondaryNode = nodePair.Value[0];
+
+                List<string> connectedNodes = [nodePair.Key];
 
                 // Loopa alla andra noder som är kopplade till secondaryNode
-                foreach (var node in nodeList.Where(n => n.Key == secondaryNode))
+                foreach (var node in nodePair.Value)
                 {
-                    if (nodeList.Where(n => n.Key == node.Value).Any(n => n.Value == primaryNode))
+                    if (IsValidConnection(node, connectedNodes, nodeList))
                     {
-                        string[] sortArray = { primaryNode, secondaryNode, node.Value };
-
-                        Array.Sort(sortArray);
-                        string resultString = $"{sortArray[0]}-{sortArray[1]}-{sortArray[2]}";
-
-                        if (!result.Contains(resultString)) {
-
-                            if (sortArray[0][0] == 't' || sortArray[1][0] == 't' || sortArray[2][0] == 't')
-                                result.Add(resultString);
-                        }
-
-                        //result.Add($"{primaryNode}-{secondaryNode}-{node.Value}");
-                        //result.Add($"{sortArray[0]}-{sortArray[1]}-{sortArray[2]}");
+                        connectedNodes.Add(node);
                     }
+
+                    if (connectedNodes.Count == 3)
+                        break;
+                }
+
+                //if (connectedNodes.Count > 2 && (connectedNodes[0][0] == 't' || connectedNodes[1][0] == 't' || connectedNodes[2][0] == 't'))
+                if (connectedNodes.Count > 2)
+                {
+                    string[] nodeArray = connectedNodes.ToArray();
+
+                    Array.Sort(nodeArray);
+
+                    string resultString = string.Join("-", nodeArray);
+
+                    if (result.Contains(resultString) == false)
+                        result.Add(resultString);
                 }
             }
 
-			Console.WriteLine("Result: " + result.Count);
+            var sortedArray = result.ToArray();
+
+            Array.Sort(sortedArray);
+
+            Console.WriteLine("Result: " + sortedArray.Length);
+        }
+
+        bool IsValidConnection(string node, List<string> connectionsToCheck, Dictionary<string, List<string>> nodeList)
+        {
+            foreach (var connection in connectionsToCheck)
+            {
+                if (nodeList[connection] == null || nodeList[connection].Contains(node) == false)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
