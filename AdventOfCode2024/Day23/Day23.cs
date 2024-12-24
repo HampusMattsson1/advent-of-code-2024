@@ -65,7 +65,7 @@ namespace AdventOfCode2024.Day23
                 List<string> connectedNodes = [nodePair.Key];
 
                 // Loopa alla andra noder som är kopplade till secondaryNode
-                GetNodeConnections(connectedNodes, node, nodeList);
+                //GetNodeConnections(connectedNodes, node, nodeList);
                 //var a = nodeList;
                 //foreach (KeyValuePair<string, List<string>> node in nodePair)
                 //{
