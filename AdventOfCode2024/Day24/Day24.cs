@@ -13,8 +13,9 @@ namespace AdventOfCode2024.Day24
     {
         public void Main()
         {
-            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day24\Example.txt");
-            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day24.txt");
+            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day24\Example.txt");
+            //var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Day24\Example2.txt");
+            var DayPath = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\PuzzleInputs\Day24.txt");
 
             var input = File.ReadAllLines(DayPath);
 
@@ -30,24 +31,72 @@ namespace AdventOfCode2024.Day24
             Dictionary<string, bool> gateMap = new();
 
             // Map up gatemap with values we know
-            foreach (var line in input)
+            int index = 0;
+            while (input[index] != "")
             {
-                if (line == "")
-                    break;
-
+                string line = input[index];
                 Console.WriteLine(line);
                 string name = line.Split(": ")[0];
                 bool value = Convert.ToBoolean(Convert.ToInt16(line.Split(": ")[1]));
 
                 gateMap[name] = value;
+                index++;
             }
 
-            var a = 2;
+            index++;
+
+            int operationStartIndex = index;
+
+            int operationsToPerform = input.Length - index;
+
+            int operationsPerformed = 0;
+
+            while (operationsPerformed < operationsToPerform)
+            {
+                string[] lineSplit = input[index].Split(' ');
+
+                string leftOperand = lineSplit[0];
+                string rightOperand = lineSplit[2];
+                string resultName = lineSplit[4];
+
+                if (gateMap.ContainsKey(leftOperand) && gateMap.ContainsKey(rightOperand) && gateMap.ContainsKey(resultName) == false)
+                {
+                    gateMap[resultName] = PerformOperation(gateMap[leftOperand], gateMap[rightOperand], lineSplit[1]);
+                    operationsPerformed++;
+                }
+
+                index++;
+
+                if (index == input.Length)
+                    index = operationStartIndex;
+            }
+
+            gateMap = gateMap.OrderByDescending(obj => obj.Key).ToDictionary(obj => obj.Key, obj => obj.Value);
+
+            string result = "";
+
+            foreach (KeyValuePair<string, bool> gate in gateMap.Where(g => g.Key.StartsWith("z")))
+            {
+                result += gate.Value == true ? '1' : '0';
+            }
+
+            Console.WriteLine("Result: " + result);
+            Console.WriteLine("Result as decimal: " + Convert.ToInt64(result, 2));
         }
 
-        bool PerformOperation(string input)
+        bool PerformOperation(bool leftOperand, bool rightOperand, string operation)
         {
-            return true;
+            switch (operation)
+            {
+                case "AND":
+                    return leftOperand && rightOperand;
+                case "OR":
+                    return leftOperand || rightOperand;
+                case "XOR":
+                    return leftOperand ^ rightOperand;
+            }
+
+            return false;
         }
 
     }
