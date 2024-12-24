@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace AdventOfCode2024.Day23
 {
@@ -64,16 +65,12 @@ namespace AdventOfCode2024.Day23
                 List<string> connectedNodes = [nodePair.Key];
 
                 // Loopa alla andra noder som är kopplade till secondaryNode
-                foreach (var node in nodePair.Value)
-                {
-                    if (IsValidConnection(node, connectedNodes, nodeList))
-                    {
-                        connectedNodes.Add(node);
-                    }
-
-                    if (connectedNodes.Count == 3)
-                        break;
-                }
+                GetNodeConnections(connectedNodes, node, nodeList);
+                //var a = nodeList;
+                //foreach (KeyValuePair<string, List<string>> node in nodePair)
+                //{
+                //    GetNodeConnections(connectedNodes, node, nodeList);
+                //}
 
                 //if (connectedNodes.Count > 2 && (connectedNodes[0][0] == 't' || connectedNodes[1][0] == 't' || connectedNodes[2][0] == 't'))
                 if (connectedNodes.Count > 2)
@@ -94,6 +91,24 @@ namespace AdventOfCode2024.Day23
             Array.Sort(sortedArray);
 
             Console.WriteLine("Result: " + sortedArray.Length);
+        }
+
+        List<string> GetNodeConnections(List<string> connectedNodes, KeyValuePair<string, List<string>> dictionaryNode, Dictionary<string, List<string>> nodeList)
+        {
+            var result = new List<string>(connectedNodes);
+
+            foreach (var node in dictionaryNode.Value)
+            {
+                if (IsValidConnection(node, connectedNodes, nodeList))
+                {
+                    result.Add(node);
+                }
+
+                if (result.Count == 3)
+                    break;
+            }
+
+            return result;
         }
 
         bool IsValidConnection(string node, List<string> connectionsToCheck, Dictionary<string, List<string>> nodeList)
